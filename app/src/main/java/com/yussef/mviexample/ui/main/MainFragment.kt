@@ -65,7 +65,7 @@ class MainFragment : Fragment(){
         when(item.itemId){
             R.id.action_get_user -> triggerGetUserEvent()
 
-            R.id.action_get_blogs -> triggerGetBlogsEvent(){}
+            R.id.action_get_blogs -> triggerGetBlogsEvent()
         }
         return super.onOptionsItemSelected(item)
     }
