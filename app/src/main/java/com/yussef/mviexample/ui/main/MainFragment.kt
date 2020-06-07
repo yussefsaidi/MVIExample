@@ -1,17 +1,23 @@
 package com.yussef.mviexample.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.yussef.mviexample.R
+import com.yussef.mviexample.ui.DataStateListener
 import com.yussef.mviexample.ui.main.state.MainStateEvent
+import com.yussef.mviexample.util.DataState
 import kotlinx.android.synthetic.main.fragment_main.*
+import java.lang.ClassCastException
 
 class MainFragment : Fragment(){
 
     lateinit var viewModel: MainViewModel
+
+    lateinit var dataStateHandler: DataStateListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +35,7 @@ class MainFragment : Fragment(){
             ViewModelProvider(this).get(MainViewModel::class.java)
         }?: throw Exception("Invalid activity")
 
+        subscribeObservers()
     }
 
     fun subscribeObservers(){
@@ -36,7 +43,10 @@ class MainFragment : Fragment(){
 
             println("DEBUG: DataState: ${dataState}")
 
-            // Handle Data<T>
+            // handle loading and message
+            dataStateHandler.onDataStateChange(dataState)
+
+            // handle Data<T>
             dataState.data?.let{ mainViewState ->
                 mainViewState.blogPosts?.let{blogPosts ->
                     // set BlogPosts data
@@ -49,15 +59,7 @@ class MainFragment : Fragment(){
                 }
             }
 
-            // Handle error
-            dataState.message?.let{
 
-            }
-
-            // Handle loading
-            dataState.loading.let {
-
-            }
 
         })
 
@@ -92,5 +94,14 @@ class MainFragment : Fragment(){
 
     private fun triggerGetBlogsEvent() {
         viewModel.setStateEvent(MainStateEvent.GetBlogPostsEvent())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try{
+            dataStateHandler = context as DataStateListener
+        } catch (e: ClassCastException){
+            println("DEBUG: $context must implement DataStateListener")
+        }
     }
 }
