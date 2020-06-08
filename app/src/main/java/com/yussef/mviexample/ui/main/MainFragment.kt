@@ -7,13 +7,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.yussef.mviexample.R
 import com.yussef.mviexample.model.BlogPost
+import com.yussef.mviexample.model.User
 import com.yussef.mviexample.ui.DataStateListener
 import com.yussef.mviexample.ui.main.state.MainStateEvent
 import com.yussef.mviexample.util.DataState
 import com.yussef.mviexample.util.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.layout_blog_list_item.*
 import java.lang.ClassCastException
 
 class MainFragment : Fragment(),
@@ -89,9 +92,22 @@ class MainFragment : Fragment(),
             }
 
             viewState.user?.let{
+                // set User data to widgets
                 println("DEBUG: Setting user data: ${it}")
+                setUserProperties(it)
             }
         })
+    }
+
+    private fun setUserProperties(user: User){
+        email.text = user.email
+        username.text = user.username
+
+        view?.let{
+            Glide.with(it)
+                .load(user.image)
+                .into(image)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
